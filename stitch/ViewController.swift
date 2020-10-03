@@ -88,16 +88,36 @@ class ViewController: UIViewController, MPMediaPickerControllerDelegate {
         previewView.videoPreviewLayer.session = captureSession
         previewView.contentMode = .scaleAspectFill
         
-        previewView.frame = CGRect(x: videoPreview.bounds.width / 2,y: 0,width: 400, height: 400)
         videoPreview.addSubview(previewView)
         captureSession.startRunning();
     }
     
+    func correctVideoOrientation(){
+        if (UIDevice.current.orientation.isLandscape){
+            videoPreview.setTransformRotation(toDegrees: -90)
+        } else {
+            videoPreview.setTransformRotation(toDegrees: 0)
+        }
+    }
+    
+//    MARK: Start
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         startVideoSession()
+        UIDevice.current.beginGeneratingDeviceOrientationNotifications()
+//        correctVideoOrientation()
     }
+
+    override func viewDidLayoutSubviews(){
+        super.viewDidLayoutSubviews()
+        previewView.frame = videoPreview.bounds
+    }
+    
+    override func didRotate(from fromInterfaceOrientation: UIInterfaceOrientation) {
+//        correctVideoOrientation()
+    }
+
 
 }
 
@@ -109,5 +129,12 @@ class PreviewView: UIView {
     /// Convenience wrapper to get layer as its statically known type.
     var videoPreviewLayer: AVCaptureVideoPreviewLayer {
         return layer as! AVCaptureVideoPreviewLayer
+    }
+}
+
+extension UIView {
+    func setTransformRotation(toDegrees angleInDegrees: CGFloat) {
+        let angleInRadians = angleInDegrees / 180.0 * CGFloat.pi
+        self.transform = CGAffineTransform(rotationAngle: angleInRadians)
     }
 }
