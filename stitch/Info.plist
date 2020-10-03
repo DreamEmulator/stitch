@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSCameraUsageDescription</key>
+	<string>We need access to the camera to record the video track</string>
 	<key>NSAppleMusicUsageDescription</key>
 	<string>In order to pick a track we need access to your music library</string>
 	<key>CFBundleDevelopmentRegion</key>

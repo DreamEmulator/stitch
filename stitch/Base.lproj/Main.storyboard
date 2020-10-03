@@ -17,17 +17,6 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aUc-lV-fXF">
-                                <rect key="frame" x="136" y="426.5" width="142" height="53"/>
-                                <fontDescription key="fontDescription" style="UICTFontTextStyleTitle0"/>
-                                <state key="normal" title="Pick track">
-                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                    <color key="titleShadowColor" systemColor="labelColor"/>
-                                </state>
-                                <connections>
-                                    <action selector="pickTrack:" destination="BYZ-38-t0r" eventType="touchUpInside" id="2ZQ-nA-q47"/>
-                                </connections>
-                            </button>
                             <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="aCx-1v-H1h">
                                 <rect key="frame" x="97" y="515" width="220" height="128"/>
                                 <subviews>
@@ -60,22 +49,42 @@
                                     <constraint firstItem="lzx-Vu-Yp1" firstAttribute="centerX" secondItem="aCx-1v-H1h" secondAttribute="centerX" id="sXH-px-WST"/>
                                 </constraints>
                             </view>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aUc-lV-fXF">
+                                <rect key="frame" x="136" y="426.5" width="142" height="53"/>
+                                <fontDescription key="fontDescription" style="UICTFontTextStyleTitle0"/>
+                                <state key="normal" title="Pick track">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    <color key="titleShadowColor" systemColor="labelColor"/>
+                                </state>
+                                <connections>
+                                    <action selector="pickTrack:" destination="BYZ-38-t0r" eventType="touchUpInside" id="2ZQ-nA-q47"/>
+                                </connections>
+                            </button>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="A0R-Mw-W5S">
+                                <rect key="frame" x="87" y="186" width="240" height="128"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </view>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemIndigoColor"/>
                         <constraints>
                             <constraint firstItem="aCx-1v-H1h" firstAttribute="top" secondItem="aUc-lV-fXF" secondAttribute="bottom" constant="35.5" id="9aV-Fx-urV"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="aCx-1v-H1h" secondAttribute="bottom" constant="219" id="ABs-Za-GDc"/>
+                            <constraint firstItem="A0R-Mw-W5S" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="Ai7-09-q0G"/>
                             <constraint firstItem="aUc-lV-fXF" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="DNQ-ae-vmm"/>
+                            <constraint firstItem="A0R-Mw-W5S" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="87" id="J7p-Si-gs6"/>
                             <constraint firstItem="aCx-1v-H1h" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="97" id="Kh9-m3-srO"/>
+                            <constraint firstItem="aUc-lV-fXF" firstAttribute="top" secondItem="A0R-Mw-W5S" secondAttribute="bottom" constant="112.5" id="SAd-DF-4Se"/>
                             <constraint firstItem="aUc-lV-fXF" firstAttribute="centerY" secondItem="6Tk-OE-BBY" secondAttribute="centerY" id="Zgg-5V-KUP"/>
                             <constraint firstItem="aCx-1v-H1h" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="tcf-2T-Zwh"/>
+                            <constraint firstItem="A0R-Mw-W5S" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="142" id="z1H-xY-D8I"/>
                         </constraints>
                     </view>
                     <connections>
                         <outlet property="playPauseButton" destination="fMi-5f-bFn" id="Uzj-jf-foF"/>
                         <outlet property="trackInfo" destination="aCx-1v-H1h" id="RIc-YI-6rh"/>
                         <outlet property="trackName" destination="lzx-Vu-Yp1" id="RU0-sA-y69"/>
+                        <outlet property="videoPreview" destination="A0R-Mw-W5S" id="tDA-VD-WHt"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>

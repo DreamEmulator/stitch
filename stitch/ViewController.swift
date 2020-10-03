@@ -7,12 +7,14 @@
 
 import UIKit
 import MediaPlayer
+import AVFoundation
 
 class ViewController: UIViewController, MPMediaPickerControllerDelegate {
 
+//    MARK: Music
     let musicPlayer = MPMusicPlayerController.systemMusicPlayer
     var track: MPMediaItem?;
-    
+
     @IBOutlet weak var trackInfo: UIView!
     @IBOutlet weak var trackName: UILabel!
     @IBOutlet weak var playPauseButton: UIButton!
@@ -54,11 +56,58 @@ class ViewController: UIViewController, MPMediaPickerControllerDelegate {
         mediaPicker.dismiss(animated: true)
     }
     
+//    MARK: Video
+    
+    @IBOutlet weak var videoPreview: UIView!
+    let captureSession = AVCaptureSession();
+    let videoOutput = AVCaptureVideoDataOutput();
+    
+    let previewView = PreviewView();
+    
+    func startVideoSession(){
+        
+        captureSession.beginConfiguration()
+        
+//        Select camera
+        let videoDevice = AVCaptureDevice.default(.builtInWideAngleCamera,
+                                                  for: .video, position: .back)
+        
+//        Set input
+        guard
+            let videoDeviceInput = try? AVCaptureDeviceInput(device: videoDevice!),
+            captureSession.canAddInput(videoDeviceInput)
+        else { print("Failed getting video device"); return }
+        captureSession.addInput(videoDeviceInput)
+        
+//        Set output
+        guard captureSession.canAddOutput(videoOutput) else { print("Can not add output"); return }
+        captureSession.sessionPreset = .medium
+        captureSession.addOutput(videoOutput)
+        captureSession.commitConfiguration()
+        
+        previewView.videoPreviewLayer.session = captureSession
+        previewView.contentMode = .scaleAspectFill
+        
+        previewView.frame = CGRect(x: videoPreview.bounds.width / 2,y: 0,width: 400, height: 400)
+        videoPreview.addSubview(previewView)
+        captureSession.startRunning();
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
+        startVideoSession()
     }
-
 
 }
 
+class PreviewView: UIView {
+    override class var layerClass: AnyClass {
+        return AVCaptureVideoPreviewLayer.self
+    }
+    
+    /// Convenience wrapper to get layer as its statically known type.
+    var videoPreviewLayer: AVCaptureVideoPreviewLayer {
+        return layer as! AVCaptureVideoPreviewLayer
+    }
+}
