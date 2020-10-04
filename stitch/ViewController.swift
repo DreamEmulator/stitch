@@ -11,12 +11,12 @@ import AVFoundation
 import Photos
 
 class ViewController: UIViewController, MPMediaPickerControllerDelegate, AVCaptureFileOutputRecordingDelegate {
-    
 
 //    MARK: Music
     let musicPlayer = MPMusicPlayerController.systemMusicPlayer
     var track: MPMediaItem?;
 
+    @IBOutlet weak var pickTrack: UIButton!
     @IBOutlet weak var trackInfo: UIView!
     @IBOutlet weak var trackName: UILabel!
     @IBOutlet weak var playPauseButton: UIButton!
@@ -53,7 +53,8 @@ class ViewController: UIViewController, MPMediaPickerControllerDelegate, AVCaptu
         track = mediaItemCollection.items[0]
         trackName.text = mediaItemCollection.items[0].title
         musicPlayer.setQueue(with: mediaItemCollection)
-        trackInfo.isHidden = false;
+        trackInfo.isHidden = false
+        pickTrack.isHidden = true
     }
     
     func mediaPickerDidCancel(_ mediaPicker: MPMediaPickerController) {
@@ -90,6 +91,23 @@ class ViewController: UIViewController, MPMediaPickerControllerDelegate, AVCaptu
     
     let previewView = PreviewView();
     
+    
+//    Orientation handler
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        
+        if let videoPreviewLayerConnection = previewView.videoPreviewLayer.connection {
+            let deviceOrientation = UIDevice.current.orientation
+            guard let newVideoOrientation = AVCaptureVideoOrientation(rawValue: deviceOrientation.rawValue),
+                  deviceOrientation.isPortrait || deviceOrientation.isLandscape else {
+                return
+            }
+            
+            videoPreviewLayerConnection.videoOrientation = newVideoOrientation
+        }
+    }
+    
+    
     func startVideoSession(){
         
         captureSession.beginConfiguration()
@@ -104,6 +122,25 @@ class ViewController: UIViewController, MPMediaPickerControllerDelegate, AVCaptu
             captureSession.canAddInput(videoDeviceInput)
         else { print("Failed getting video device"); return }
         captureSession.addInput(videoDeviceInput)
+        
+        DispatchQueue.main.async {
+            /*
+             Dispatch video streaming to the main queue because AVCaptureVideoPreviewLayer is the backing layer for PreviewView.
+             You can manipulate UIView only on the main thread.
+             Note: As an exception to the above rule, it's not necessary to serialize video orientation changes
+             on the AVCaptureVideoPreviewLayer’s connection with other session manipulation.
+             
+             Use the window scene's orientation as the initial video orientation. Subsequent orientation changes are
+             handled by CameraViewController.viewWillTransition(to:with:).
+             */
+            var initialVideoOrientation: AVCaptureVideoOrientation = .portrait
+            
+            if let videoOrientation = AVCaptureVideoOrientation(rawValue: UIDevice.current.orientation.rawValue) {
+                    initialVideoOrientation = videoOrientation
+                }
+            
+            self.previewView.videoPreviewLayer.connection?.videoOrientation = initialVideoOrientation
+        }
         
 //        Set output
         guard captureSession.canAddOutput(videoOutput) else { print("Can not add output"); return }
@@ -120,7 +157,8 @@ class ViewController: UIViewController, MPMediaPickerControllerDelegate, AVCaptu
         previewView.contentMode = .scaleAspectFill
         
         videoPreview.addSubview(previewView)
-        captureSession.startRunning();
+        captureSession.startRunning()
+        correctVideoOrientation()
     }
     
     func startRecordingVideo(){
@@ -144,10 +182,14 @@ class ViewController: UIViewController, MPMediaPickerControllerDelegate, AVCaptu
     }
     
     func correctVideoOrientation(){
-        if (UIDevice.current.orientation.isLandscape){
-            videoPreview.setTransformRotation(toDegrees: -90)
-        } else {
-            videoPreview.setTransformRotation(toDegrees: 0)
+        if let videoPreviewLayerConnection = previewView.videoPreviewLayer.connection {
+            let deviceOrientation = UIDevice.current.orientation
+            guard let newVideoOrientation = AVCaptureVideoOrientation(rawValue: deviceOrientation.rawValue),
+                  deviceOrientation.isPortrait || deviceOrientation.isLandscape else {
+                return
+            }
+            
+            videoPreviewLayerConnection.videoOrientation = newVideoOrientation
         }
     }
     
@@ -156,8 +198,6 @@ class ViewController: UIViewController, MPMediaPickerControllerDelegate, AVCaptu
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         startVideoSession()
-        UIDevice.current.beginGeneratingDeviceOrientationNotifications()
-//        correctVideoOrientation()
     }
 
     override func viewDidLayoutSubviews(){
@@ -165,10 +205,6 @@ class ViewController: UIViewController, MPMediaPickerControllerDelegate, AVCaptu
         previewView.frame = videoPreview.bounds
     }
     
-    override func didRotate(from fromInterfaceOrientation: UIInterfaceOrientation) {
-//        correctVideoOrientation()
-    }
-
 
 }
 

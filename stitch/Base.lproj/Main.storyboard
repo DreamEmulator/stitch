@@ -17,9 +17,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="834" height="1194"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="A0R-Mw-W5S">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="A0R-Mw-W5S">
                                 <rect key="frame" x="0.0" y="0.0" width="834" height="1194"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </view>
                             <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="aCx-1v-H1h">
@@ -46,7 +45,7 @@
                                         </connections>
                                     </button>
                                 </subviews>
-                                <color key="backgroundColor" red="0.35259568008733183" green="0.32215652536613842" blue="0.85385273902849745" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstItem="fMi-5f-bFn" firstAttribute="centerX" secondItem="aCx-1v-H1h" secondAttribute="centerX" id="4aa-CH-Jdy"/>
                                     <constraint firstItem="lzx-Vu-Yp1" firstAttribute="top" secondItem="aCx-1v-H1h" secondAttribute="top" constant="19" id="Vk6-9s-IEn"/>
@@ -71,13 +70,19 @@
                         <constraints>
                             <constraint firstItem="aCx-1v-H1h" firstAttribute="top" secondItem="aUc-lV-fXF" secondAttribute="bottom" constant="35.5" id="9aV-Fx-urV"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="aCx-1v-H1h" secondAttribute="bottom" constant="219" id="ABs-Za-GDc"/>
+                            <constraint firstItem="A0R-Mw-W5S" firstAttribute="centerX" secondItem="aUc-lV-fXF" secondAttribute="centerX" id="BWx-I5-Gxj"/>
                             <constraint firstItem="aUc-lV-fXF" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="DNQ-ae-vmm"/>
                             <constraint firstItem="aCx-1v-H1h" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="97" id="Kh9-m3-srO"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="A0R-Mw-W5S" secondAttribute="trailing" id="MOE-jR-DeW"/>
                             <constraint firstItem="aUc-lV-fXF" firstAttribute="centerY" secondItem="6Tk-OE-BBY" secondAttribute="centerY" id="Zgg-5V-KUP"/>
+                            <constraint firstAttribute="bottom" secondItem="A0R-Mw-W5S" secondAttribute="bottom" id="cup-eh-kSP"/>
+                            <constraint firstItem="A0R-Mw-W5S" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="hp6-aI-Y0i"/>
+                            <constraint firstItem="A0R-Mw-W5S" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="krp-bn-H9S"/>
                             <constraint firstItem="aCx-1v-H1h" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="tcf-2T-Zwh"/>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="pickTrack" destination="aUc-lV-fXF" id="EIB-V1-2yr"/>
                         <outlet property="playPauseButton" destination="fMi-5f-bFn" id="Uzj-jf-foF"/>
                         <outlet property="trackInfo" destination="aCx-1v-H1h" id="RIc-YI-6rh"/>
                         <outlet property="trackName" destination="lzx-Vu-Yp1" id="RU0-sA-y69"/>
