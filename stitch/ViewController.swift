@@ -144,7 +144,7 @@ class ViewController: UIViewController, MPMediaPickerControllerDelegate, AVCaptu
         
 //        Set output
         guard captureSession.canAddOutput(videoOutput) else { print("Can not add output"); return }
-        captureSession.sessionPreset = .medium
+        captureSession.sessionPreset = .high
         if let connection = videoOutput.connection(with: .video) {
             if connection.isVideoStabilizationSupported {
                 connection.preferredVideoStabilizationMode = .auto
@@ -154,7 +154,9 @@ class ViewController: UIViewController, MPMediaPickerControllerDelegate, AVCaptu
         captureSession.commitConfiguration()
         
         previewView.videoPreviewLayer.session = captureSession
-        previewView.contentMode = .scaleAspectFill
+        previewView.videoPreviewLayer.videoGravity = AVLayerVideoGravity.resize
+        previewView.contentMode = .scaleToFill
+        previewView.backgroundColor = .blue
         
         videoPreview.addSubview(previewView)
         captureSession.startRunning()
