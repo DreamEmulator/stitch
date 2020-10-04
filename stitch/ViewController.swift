@@ -8,8 +8,10 @@
 import UIKit
 import MediaPlayer
 import AVFoundation
+import Photos
 
-class ViewController: UIViewController, MPMediaPickerControllerDelegate {
+class ViewController: UIViewController, MPMediaPickerControllerDelegate, AVCaptureFileOutputRecordingDelegate {
+    
 
 //    MARK: Music
     let musicPlayer = MPMusicPlayerController.systemMusicPlayer
@@ -35,10 +37,12 @@ class ViewController: UIViewController, MPMediaPickerControllerDelegate {
     
     func playTrack (){
         if (musicPlayer.playbackState != .playing){
-            musicPlayer.play();
+            musicPlayer.play()
+            startRecordingVideo()
             playPauseButton.setImage(UIImage(systemName:"pause.fill"), for: .normal)
         } else {
-            musicPlayer.pause();
+            musicPlayer.pause()
+            stopRecordingVideo()
             playPauseButton.setImage(UIImage(systemName:"play.fill"), for: .normal)
         }
     }
@@ -60,7 +64,29 @@ class ViewController: UIViewController, MPMediaPickerControllerDelegate {
     
     @IBOutlet weak var videoPreview: UIView!
     let captureSession = AVCaptureSession();
-    let videoOutput = AVCaptureVideoDataOutput();
+    let videoOutput = AVCaptureMovieFileOutput();
+    
+    
+//    MARK: Recording delegat emethods
+//    didFinishRecordingTo
+    func fileOutput(_ output: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL, from connections: [AVCaptureConnection], error: Error?) {
+        print("Did stop recording to \(outputFileURL)")
+        PHPhotoLibrary.shared().performChanges({
+            let options = PHAssetResourceCreationOptions()
+            options.shouldMoveFile = true
+            let creationRequest = PHAssetCreationRequest.forAsset()
+            creationRequest.addResource(with: .video, fileURL: outputFileURL, options: options)
+        }, completionHandler: { success, error in
+                if !success {
+                    print("AVCam couldn't save the movie to your photo library: \(String(describing: error))")
+                }
+            }
+        )
+    }
+//    didStartRecordingTo
+    func fileOutput(_ output: AVCaptureFileOutput, didStartRecordingTo fileURL: URL, from connections: [AVCaptureConnection]) {
+        print("Did start recording to \(fileURL)")
+    }
     
     let previewView = PreviewView();
     
@@ -82,6 +108,11 @@ class ViewController: UIViewController, MPMediaPickerControllerDelegate {
 //        Set output
         guard captureSession.canAddOutput(videoOutput) else { print("Can not add output"); return }
         captureSession.sessionPreset = .medium
+        if let connection = videoOutput.connection(with: .video) {
+            if connection.isVideoStabilizationSupported {
+                connection.preferredVideoStabilizationMode = .auto
+            }
+        }
         captureSession.addOutput(videoOutput)
         captureSession.commitConfiguration()
         
@@ -90,6 +121,26 @@ class ViewController: UIViewController, MPMediaPickerControllerDelegate {
         
         videoPreview.addSubview(previewView)
         captureSession.startRunning();
+    }
+    
+    func startRecordingVideo(){
+        print("Started recording")
+        
+        let videoOutputConnection = videoOutput.connection(with: .video)
+        let availableVideoCodecTypes = videoOutput.availableVideoCodecTypes
+        if availableVideoCodecTypes.contains(.hevc) {
+            videoOutput.setOutputSettings([AVVideoCodecKey: AVVideoCodecType.hevc], for: videoOutputConnection!)
+        }
+        
+        // Start recording video to a temporary file.
+        let outputFileName = NSUUID().uuidString
+        let outputFilePath = (NSTemporaryDirectory() as NSString).appendingPathComponent((outputFileName as NSString).appendingPathExtension("mov")!)
+        videoOutput.startRecording(to: URL(fileURLWithPath: outputFilePath), recordingDelegate: self)
+    }
+    
+    func stopRecordingVideo(){
+        print("Stopped recording")
+        videoOutput.stopRecording()
     }
     
     func correctVideoOrientation(){
@@ -130,6 +181,7 @@ class PreviewView: UIView {
     var videoPreviewLayer: AVCaptureVideoPreviewLayer {
         return layer as! AVCaptureVideoPreviewLayer
     }
+    
 }
 
 extension UIView {
