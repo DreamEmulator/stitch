@@ -14,7 +14,9 @@ class ViewController: UIViewController, MPMediaPickerControllerDelegate, AVCaptu
 
 //    MARK: Music
     let musicPlayer = MPMusicPlayerController.systemMusicPlayer
-    var track: MPMediaItem?;
+    var track: MPMediaItem?
+    var video: URL?
+    var stitch: Stitch?
 
     @IBOutlet weak var pickTrack: UIButton!
     @IBOutlet weak var trackInfo: UIView!
@@ -72,17 +74,11 @@ class ViewController: UIViewController, MPMediaPickerControllerDelegate, AVCaptu
 //    didFinishRecordingTo
     func fileOutput(_ output: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL, from connections: [AVCaptureConnection], error: Error?) {
         print("Did stop recording to \(outputFileURL)")
-        PHPhotoLibrary.shared().performChanges({
-            let options = PHAssetResourceCreationOptions()
-            options.shouldMoveFile = true
-            let creationRequest = PHAssetCreationRequest.forAsset()
-            creationRequest.addResource(with: .video, fileURL: outputFileURL, options: options)
-        }, completionHandler: { success, error in
-                if !success {
-                    print("AVCam couldn't save the movie to your photo library: \(String(describing: error))")
-                }
-            }
-        )
+        
+        video = outputFileURL
+        
+        stitch = Stitch(video: video!, audio: track!, duration: output.recordedDuration)
+        stitch?.stitch()
     }
 //    didStartRecordingTo
     func fileOutput(_ output: AVCaptureFileOutput, didStartRecordingTo fileURL: URL, from connections: [AVCaptureConnection]) {
@@ -155,8 +151,6 @@ class ViewController: UIViewController, MPMediaPickerControllerDelegate, AVCaptu
         
         previewView.videoPreviewLayer.session = captureSession
         previewView.videoPreviewLayer.videoGravity = AVLayerVideoGravity.resize
-        previewView.contentMode = .scaleToFill
-        previewView.backgroundColor = .blue
         
         videoPreview.addSubview(previewView)
         captureSession.startRunning()
