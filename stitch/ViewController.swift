@@ -16,6 +16,7 @@ class ViewController: UIViewController, MPMediaPickerControllerDelegate, AVCaptu
     let musicPlayer = MPMusicPlayerController.systemMusicPlayer
     var track: MPMediaItem?
     var video: URL?
+    var orientation = UIDevice.current.orientation
 
     @IBOutlet weak var pickTrack: UIButton!
     @IBOutlet weak var trackInfo: UIView!
@@ -75,7 +76,8 @@ class ViewController: UIViewController, MPMediaPickerControllerDelegate, AVCaptu
         print("Did stop recording to \(outputFileURL)")
         
         video = outputFileURL
-        let stitch = Stitch(video: video!, audio: track!, duration: output.recordedDuration)
+        
+        let stitch = Stitch(video: video!, audio: track!, duration: output.recordedDuration, orientation: orientation)
         stitch.stitch()
     }
 //    didStartRecordingTo
@@ -90,15 +92,7 @@ class ViewController: UIViewController, MPMediaPickerControllerDelegate, AVCaptu
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
         
-        if let videoPreviewLayerConnection = previewView.videoPreviewLayer.connection {
-            let deviceOrientation = UIDevice.current.orientation
-            guard let newVideoOrientation = AVCaptureVideoOrientation(rawValue: deviceOrientation.rawValue),
-                  deviceOrientation.isPortrait || deviceOrientation.isLandscape else {
-                return
-            }
-            
-            videoPreviewLayerConnection.videoOrientation = newVideoOrientation
-        }
+        correctVideoOrientation()
     }
     
     
@@ -111,8 +105,7 @@ class ViewController: UIViewController, MPMediaPickerControllerDelegate, AVCaptu
                                                   for: .video, position: .back)
         
 //        Set input
-        guard
-            let videoDeviceInput = try? AVCaptureDeviceInput(device: videoDevice!),
+        guard let videoDeviceInput = try? AVCaptureDeviceInput(device: videoDevice!),
             captureSession.canAddInput(videoDeviceInput)
         else { print("Failed getting video device"); return }
         captureSession.addInput(videoDeviceInput)
@@ -127,13 +120,7 @@ class ViewController: UIViewController, MPMediaPickerControllerDelegate, AVCaptu
              Use the window scene's orientation as the initial video orientation. Subsequent orientation changes are
              handled by CameraViewController.viewWillTransition(to:with:).
              */
-            var initialVideoOrientation: AVCaptureVideoOrientation = .portrait
-            
-            if let videoOrientation = AVCaptureVideoOrientation(rawValue: UIDevice.current.orientation.rawValue) {
-                    initialVideoOrientation = videoOrientation
-                }
-            
-            self.previewView.videoPreviewLayer.connection?.videoOrientation = initialVideoOrientation
+            self.correctVideoOrientation()
         }
         
 //        Set output
@@ -143,16 +130,17 @@ class ViewController: UIViewController, MPMediaPickerControllerDelegate, AVCaptu
             if connection.isVideoStabilizationSupported {
                 connection.preferredVideoStabilizationMode = .auto
             }
+            videoOutput.setRecordsVideoOrientationAndMirroringChangesAsMetadataTrack(true, for: connection)
         }
+        
         captureSession.addOutput(videoOutput)
         captureSession.commitConfiguration()
         
         previewView.videoPreviewLayer.session = captureSession
-        previewView.videoPreviewLayer.videoGravity = AVLayerVideoGravity.resize
+        previewView.videoPreviewLayer.videoGravity = AVLayerVideoGravity.resizeAspectFill
         
         videoPreview.addSubview(previewView)
         captureSession.startRunning()
-        correctVideoOrientation()
     }
     
     func startRecordingVideo(){
@@ -163,7 +151,7 @@ class ViewController: UIViewController, MPMediaPickerControllerDelegate, AVCaptu
         if availableVideoCodecTypes.contains(.hevc) {
             videoOutput.setOutputSettings([AVVideoCodecKey: AVVideoCodecType.hevc], for: videoOutputConnection!)
         }
-        
+        videoOutputConnection?.videoOrientation = AVCaptureVideoOrientation(rawValue: UIDevice.current.orientation.rawValue)!
         // Start recording video to a temporary file.
         let outputFileName = NSUUID().uuidString
         let outputFilePath = (NSTemporaryDirectory() as NSString).appendingPathComponent((outputFileName as NSString).appendingPathExtension("mov")!)
@@ -182,7 +170,7 @@ class ViewController: UIViewController, MPMediaPickerControllerDelegate, AVCaptu
                   deviceOrientation.isPortrait || deviceOrientation.isLandscape else {
                 return
             }
-            
+            orientation = deviceOrientation
             videoPreviewLayerConnection.videoOrientation = newVideoOrientation
         }
     }
