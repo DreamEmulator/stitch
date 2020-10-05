@@ -24,6 +24,8 @@
 	<string>In order to pick a track we need access to your music library</string>
 	<key>NSCameraUsageDescription</key>
 	<string>We need access to the camera to record the video track</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>This is so we can record audio with the video</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>This is so we can add the video to your library</string>
 	<key>UIApplicationSceneManifest</key>

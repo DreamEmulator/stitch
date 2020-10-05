@@ -16,7 +16,6 @@ class ViewController: UIViewController, MPMediaPickerControllerDelegate, AVCaptu
     let musicPlayer = MPMusicPlayerController.systemMusicPlayer
     var track: MPMediaItem?
     var video: URL?
-    var stitch: Stitch?
 
     @IBOutlet weak var pickTrack: UIButton!
     @IBOutlet weak var trackInfo: UIView!
@@ -70,15 +69,14 @@ class ViewController: UIViewController, MPMediaPickerControllerDelegate, AVCaptu
     let videoOutput = AVCaptureMovieFileOutput();
     
     
-//    MARK: Recording delegat emethods
+//    MARK: Recording delegate methods
 //    didFinishRecordingTo
     func fileOutput(_ output: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL, from connections: [AVCaptureConnection], error: Error?) {
         print("Did stop recording to \(outputFileURL)")
         
         video = outputFileURL
-        
-        stitch = Stitch(video: video!, audio: track!, duration: output.recordedDuration)
-        stitch?.stitch()
+        let stitch = Stitch(video: video!, audio: track!, duration: output.recordedDuration)
+        stitch.stitch()
     }
 //    didStartRecordingTo
     func fileOutput(_ output: AVCaptureFileOutput, didStartRecordingTo fileURL: URL, from connections: [AVCaptureConnection]) {

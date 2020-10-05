@@ -22,9 +22,29 @@ class Stitch {
     }
     
     func stitch (){
-        
+    
         let videoAsset = AVAsset(url: video)
-        let musicAsset = AVAsset(url: audio.assetURL!)
+        let audioAsset = AVAsset(url: audio.assetURL!.absoluteURL)
+        
+        guard videoAsset.isExportable else {
+            print("Can not export video")
+            return
+        }
+        
+        guard audioAsset.isExportable else {
+            print("Can not export audio")
+            return
+        }
+        
+        guard videoAsset.hasProtectedContent else {
+            print("Is protected video")
+            return
+        }
+        
+        guard audioAsset.hasProtectedContent else {
+            print("Is protected audio")
+            return
+        }
         
         let audioVideoComposition = AVMutableComposition()
         
@@ -35,10 +55,10 @@ class Stitch {
             .addMutableTrack(withMediaType: .audio, preferredTrackID: .init())!
         
         let videoAssetTrack = videoAsset.tracks(withMediaType: .video)[0]
-        let audioAssetTrack = videoAsset.tracks(withMediaType: .audio).first
-
+        let audioAssetTrack = audioAsset.tracks(withMediaType: .audio).first
+        let timeRange = CMTimeRange(start: .zero, duration: videoAsset.duration)
+        
         do {
-            let timeRange = CMTimeRange(start: .zero, duration: videoAsset.duration)
             
             try videoCompositionTrack.insertTimeRange(timeRange, of: videoAssetTrack, at: .zero)
             
@@ -49,20 +69,22 @@ class Stitch {
             print("Failed to insert timeranges")
         }
         
-//        let outputFileName = NSUUID().uuidString
-//        let outputFilePath = (NSTemporaryDirectory() as NSString).appendingPathComponent((outputFileName as NSString).appendingPathExtension("mp4")!)
-        
         let exportUrl = FileManager.default
             .urls(for: .applicationSupportDirectory, in: .userDomainMask).first?
             .appendingPathComponent("\(Date().timeIntervalSince1970)-video.mp4")
 
+        let compatiblePresets = AVAssetExportSession.exportPresets(compatibleWith: audioVideoComposition)
+        var preset: String = AVAssetExportPresetPassthrough
+        if compatiblePresets.contains(AVAssetExportPreset1920x1080) { preset = AVAssetExportPreset1920x1080 }
+        
         let exportSession = AVAssetExportSession(
             asset: audioVideoComposition,
-            presetName: AVAssetExportPresetHighestQuality
+            presetName: preset
         )
         
-        exportSession?.outputFileType = .m4v
+        exportSession?.outputFileType = .mp4
         exportSession?.outputURL = exportUrl
+        exportSession!.timeRange = timeRange
         
         exportSession?.exportAsynchronously(completionHandler: {
             guard let status = exportSession?.status else { return }
@@ -82,6 +104,7 @@ class Stitch {
                         }
                         )
                     }
+                    print("Status completed")
                     break
                 case .unknown:
                     print("Status unknown")
@@ -94,7 +117,7 @@ class Stitch {
                     break
                 case .failed:
                     print("Status failed")
-                    print(exportSession)
+                    print(exportSession?.error)
                     break
                 case .cancelled:
                     print("Status cancelled")
