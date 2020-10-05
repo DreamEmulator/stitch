@@ -49,9 +49,9 @@ class Stitch {
             print("Failed to insert timeranges")
         }
         
-        let exportUrl = FileManager.default
-            .urls(for: .applicationSupportDirectory, in: .userDomainMask).first?
-            .appendingPathComponent("\(Date().timeIntervalSince1970)-video.mp4")
+        let outputFileName = NSUUID().uuidString
+        let outputFilePath = (NSTemporaryDirectory() as NSString).appendingPathComponent((outputFileName as NSString).appendingPathExtension("mp4")!)
+        let exportUrl = URL(fileURLWithPath: outputFilePath)
 
         let compatiblePresets = AVAssetExportSession.exportPresets(compatibleWith: audioVideoComposition)
         var preset: String = AVAssetExportPresetPassthrough
@@ -76,7 +76,7 @@ class Stitch {
                             let options = PHAssetResourceCreationOptions()
                             options.shouldMoveFile = true
                             let creationRequest = PHAssetCreationRequest.forAsset()
-                            creationRequest.addResource(with: .video, fileURL: exportUrl!, options: options)
+                            creationRequest.addResource(with: .video, fileURL: exportUrl, options: options)
                         }, completionHandler: { success, error in
                             if !success {
                                 print("Stitch couldn't save the movie to your photo library: \(String(describing: error))")
