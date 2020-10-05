@@ -26,26 +26,6 @@ class Stitch {
         let videoAsset = AVAsset(url: video)
         let audioAsset = AVAsset(url: audio.assetURL!.absoluteURL)
         
-//        guard videoAsset.isExportable else {
-//            print("Can not export video")
-//            return
-//        }
-//        
-//        guard audioAsset.isExportable else {
-//            print("Can not export audio")
-//            return
-//        }
-//        
-//        guard videoAsset.hasProtectedContent else {
-//            print("Is protected video")
-//            return
-//        }
-//        
-//        guard audioAsset.hasProtectedContent else {
-//            print("Is protected audio")
-//            return
-//        }
-        
         let audioVideoComposition = AVMutableComposition()
         
         let videoCompositionTrack = audioVideoComposition
