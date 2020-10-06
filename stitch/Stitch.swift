@@ -39,24 +39,24 @@ class Stitch {
     }
     
     func stitch (){
-    
-//        Assets
+        
+        //        Assets
         let videoAsset = AVAsset(url: video)
         guard let audioUrl = audio.assetURL else {
             return
         }
         let audioAsset = AVAsset(url: audioUrl.absoluteURL)
         
-//        The composition
+        //        The composition
         let audioVideoComposition = AVMutableComposition()
         
-//        The tracks of the composition
+        //        The tracks of the composition
         let videoCompositionTrack = audioVideoComposition
             .addMutableTrack(withMediaType: .video, preferredTrackID: .init())!
         let audioCompositionTrack = audioVideoComposition
             .addMutableTrack(withMediaType: .audio, preferredTrackID: .init())!
         
-//        Putting th assets onto the travks
+        //        Putting th assets onto the travks
         let videoAssetTrack = videoAsset.tracks(withMediaType: .video)[0]
         let audioAssetTrack = audioAsset.tracks(withMediaType: .audio).first
         let timeRange = CMTimeRange(start: .zero, duration: videoAsset.duration)
@@ -64,7 +64,7 @@ class Stitch {
         do {
             try videoCompositionTrack.insertTimeRange(timeRange, of: videoAssetTrack, at: .zero)
             
-//            Rotate the video according to the orienation
+            //            Rotate the video according to the orienation
             print(orientation.rawValue)
             videoCompositionTrack.preferredTransform = getVideoTransform()
             
@@ -75,14 +75,14 @@ class Stitch {
         } catch {
             print("Failed to insert timeranges")
         }
-    
         
-//        Create file url
+        
+        //        Create file url
         let outputFileName = NSUUID().uuidString
         let outputFilePath = (NSTemporaryDirectory() as NSString).appendingPathComponent((outputFileName as NSString).appendingPathExtension("mp4")!)
         let exportUrl = URL(fileURLWithPath: outputFilePath)
         
-//     MARK:   Setup export session
+        //     MARK:   Setup export session
         let exportSession = AVAssetExportSession(
             asset: audioVideoComposition,
             presetName: AVAssetExportPresetPassthrough
@@ -92,8 +92,19 @@ class Stitch {
         exportSession?.outputURL = exportUrl
         exportSession!.timeRange = timeRange
         
+        var exportProgressBarTimer = Timer() // initialize timer
+        
+        exportProgressBarTimer = Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true) { timer in
+            // Get Progress
+            let exportProgress = Float((exportSession?.progress)!);
+            let progress:[String: Float] = ["progress": exportProgress]
+            NotificationCenter.default.post(name: Notification.Name("ProgressBarPercentage"), object: nil, userInfo: progress)
+        }
+        
+        
         exportSession?.exportAsynchronously(completionHandler: {
             guard let status = exportSession?.status else { return }
+            exportProgressBarTimer.invalidate()
             switch status {
                 case .completed:
                     //        Add to PhotoLibrary

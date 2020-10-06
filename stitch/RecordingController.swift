@@ -11,17 +11,19 @@ import AVFoundation
 import Photos
 
 class ViewController: UIViewController, MPMediaPickerControllerDelegate, AVCaptureFileOutputRecordingDelegate {
-
-//    MARK: Music
+    
+    //    MARK: Music
     let musicPlayer = MPMusicPlayerController.systemMusicPlayer
     var track: MPMediaItem?
     var video: URL?
     var orientation = UIDevice.current.orientation
-
+    
     @IBOutlet weak var pickTrack: UIButton!
     @IBOutlet weak var trackInfo: UIView!
     @IBOutlet weak var trackName: UILabel!
     @IBOutlet weak var playPauseButton: UIButton!
+    @IBOutlet weak var progress: UIProgressView!
+    
     
     @IBAction func pickTrack(_ sender: UIButton) {
         let controller = MPMediaPickerController(mediaTypes: .music)
@@ -36,6 +38,7 @@ class ViewController: UIViewController, MPMediaPickerControllerDelegate, AVCaptu
             playTrack()
         }
     }
+    
     
     func playTrack (){
         if (musicPlayer.playbackState != .playing){
@@ -63,15 +66,15 @@ class ViewController: UIViewController, MPMediaPickerControllerDelegate, AVCaptu
         mediaPicker.dismiss(animated: true)
     }
     
-//    MARK: Video
+    //    MARK: Video
     
     @IBOutlet weak var videoPreview: UIView!
     let captureSession = AVCaptureSession();
     let videoOutput = AVCaptureMovieFileOutput();
     
     
-//    MARK: Recording delegate methods
-//    didFinishRecordingTo
+    //    MARK: Recording delegate methods
+    //    didFinishRecordingTo
     func fileOutput(_ output: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL, from connections: [AVCaptureConnection], error: Error?) {
         print("Did stop recording to \(outputFileURL)")
         
@@ -80,7 +83,7 @@ class ViewController: UIViewController, MPMediaPickerControllerDelegate, AVCaptu
         let stitch = Stitch(video: video!, audio: track!, duration: output.recordedDuration, orientation: orientation)
         stitch.stitch()
     }
-//    didStartRecordingTo
+    //    didStartRecordingTo
     func fileOutput(_ output: AVCaptureFileOutput, didStartRecordingTo fileURL: URL, from connections: [AVCaptureConnection]) {
         print("Did start recording to \(fileURL)")
     }
@@ -88,7 +91,7 @@ class ViewController: UIViewController, MPMediaPickerControllerDelegate, AVCaptu
     let previewView = PreviewView();
     
     
-//    Orientation handler
+    //    Orientation handler
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
         
@@ -100,30 +103,21 @@ class ViewController: UIViewController, MPMediaPickerControllerDelegate, AVCaptu
         
         captureSession.beginConfiguration()
         
-//        Select camera
+        //        Select camera
         let videoDevice = AVCaptureDevice.default(.builtInWideAngleCamera,
                                                   for: .video, position: .back)
         
-//        Set input
+        //        Set input
         guard let videoDeviceInput = try? AVCaptureDeviceInput(device: videoDevice!),
-            captureSession.canAddInput(videoDeviceInput)
+              captureSession.canAddInput(videoDeviceInput)
         else { print("Failed getting video device"); return }
         captureSession.addInput(videoDeviceInput)
         
         DispatchQueue.main.async {
-            /*
-             Dispatch video streaming to the main queue because AVCaptureVideoPreviewLayer is the backing layer for PreviewView.
-             You can manipulate UIView only on the main thread.
-             Note: As an exception to the above rule, it's not necessary to serialize video orientation changes
-             on the AVCaptureVideoPreviewLayer’s connection with other session manipulation.
-             
-             Use the window scene's orientation as the initial video orientation. Subsequent orientation changes are
-             handled by CameraViewController.viewWillTransition(to:with:).
-             */
             self.correctVideoOrientation()
         }
         
-//        Set output
+        //        Set output
         guard captureSession.canAddOutput(videoOutput) else { print("Can not add output"); return }
         captureSession.sessionPreset = .high
         if let connection = videoOutput.connection(with: .video) {
@@ -175,19 +169,34 @@ class ViewController: UIViewController, MPMediaPickerControllerDelegate, AVCaptu
         }
     }
     
-//    MARK: Start
+    func statusUpdate(message: Int){
+        print(message)
+    }
+    
+    
+    //    MARK: Start
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         startVideoSession()
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: "ProgressBarPercentage"), object: nil, queue: .main, using: { notification in
+            
+            let progressValue = notification.userInfo!["progress"] as! Float
+            print(progressValue)
+            if progressValue == 0 || progressValue == 1 {
+                self.progress.isHidden = true } else {
+                    self.progress.isHidden = false
+                    self.progress.progress = progressValue
+                }
+        })
     }
-
+    
     override func viewDidLayoutSubviews(){
         super.viewDidLayoutSubviews()
         previewView.frame = videoPreview.bounds
     }
     
-
+    
 }
 
 class PreviewView: UIView {

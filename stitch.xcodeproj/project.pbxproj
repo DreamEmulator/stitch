@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		BD8BA11F25285DE200CC1995 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD8BA11E25285DE200CC1995 /* AppDelegate.swift */; };
 		BD8BA12125285DE200CC1995 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD8BA12025285DE200CC1995 /* SceneDelegate.swift */; };
-		BD8BA12325285DE200CC1995 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD8BA12225285DE200CC1995 /* ViewController.swift */; };
+		BD8BA12325285DE200CC1995 /* RecordingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD8BA12225285DE200CC1995 /* RecordingController.swift */; };
 		BD8BA12625285DE200CC1995 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BD8BA12425285DE200CC1995 /* Main.storyboard */; };
 		BD8BA12825285DE300CC1995 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BD8BA12725285DE300CC1995 /* Assets.xcassets */; };
 		BD8BA12B25285DE300CC1995 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BD8BA12925285DE300CC1995 /* LaunchScreen.storyboard */; };
@@ -20,7 +20,7 @@
 		BD8BA11B25285DE200CC1995 /* stitch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = stitch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BD8BA11E25285DE200CC1995 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		BD8BA12025285DE200CC1995 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		BD8BA12225285DE200CC1995 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		BD8BA12225285DE200CC1995 /* RecordingController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingController.swift; sourceTree = "<group>"; };
 		BD8BA12525285DE200CC1995 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		BD8BA12725285DE300CC1995 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		BD8BA12A25285DE300CC1995 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -60,7 +60,7 @@
 			children = (
 				BD8BA11E25285DE200CC1995 /* AppDelegate.swift */,
 				BD8BA12025285DE200CC1995 /* SceneDelegate.swift */,
-				BD8BA12225285DE200CC1995 /* ViewController.swift */,
+				BD8BA12225285DE200CC1995 /* RecordingController.swift */,
 				BD8BA12425285DE200CC1995 /* Main.storyboard */,
 				BD8BA12725285DE300CC1995 /* Assets.xcassets */,
 				BD8BA12925285DE300CC1995 /* LaunchScreen.storyboard */,
@@ -140,7 +140,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BD8BA12325285DE200CC1995 /* ViewController.swift in Sources */,
+				BD8BA12325285DE200CC1995 /* RecordingController.swift in Sources */,
 				BD8BA11F25285DE200CC1995 /* AppDelegate.swift in Sources */,
 				BD8BA1402529D48D00CC1995 /* Stitch.swift in Sources */,
 				BD8BA12125285DE200CC1995 /* SceneDelegate.swift in Sources */,
