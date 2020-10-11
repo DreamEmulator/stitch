@@ -15,12 +15,14 @@ class Stitch {
     let duration: CMTime
     let audio: MPMediaItem
     let orientation: UIDeviceOrientation
+    let startAudioPosition: Double
     
-    init(video: URL, audio: MPMediaItem, duration: CMTime, orientation: UIDeviceOrientation){
+    init(video: URL, audio: MPMediaItem, duration: CMTime, orientation: UIDeviceOrientation, startAudioPosition: Double){
         self.video = video
         self.audio = audio
         self.duration = duration
         self.orientation = orientation
+        self.startAudioPosition = startAudioPosition
     }
     
     func getVideoTransform() -> CGAffineTransform {
@@ -60,16 +62,16 @@ class Stitch {
         let videoAssetTrack = videoAsset.tracks(withMediaType: .video)[0]
         let audioAssetTrack = audioAsset.tracks(withMediaType: .audio).first
         let timeRange = CMTimeRange(start: .zero, duration: videoAsset.duration)
+        let timeRangeAudio = CMTimeRange(start: CMTime(seconds: startAudioPosition, preferredTimescale: .max), duration: videoAsset.duration)
         
         do {
             try videoCompositionTrack.insertTimeRange(timeRange, of: videoAssetTrack, at: .zero)
             
             //            Rotate the video according to the orienation
-            print(orientation.rawValue)
             videoCompositionTrack.preferredTransform = getVideoTransform()
             
             if let audioAssetTrack = audioAssetTrack {
-                try audioCompositionTrack.insertTimeRange(timeRange, of: audioAssetTrack, at: .zero)
+                try audioCompositionTrack.insertTimeRange(timeRangeAudio, of: audioAssetTrack, at: .zero)
             }
             
         } catch {

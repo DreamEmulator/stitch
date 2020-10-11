@@ -17,6 +17,8 @@ class ViewController: UIViewController, MPMediaPickerControllerDelegate, AVCaptu
     var track: MPMediaItem?
     var video: URL?
     var orientation = UIDevice.current.orientation
+    var startAudioPosition: Double?
+    var endAudioPosition: Double?
     
     @IBOutlet weak var pickTrack: UIButton!
     @IBOutlet weak var trackInfo: UIView!
@@ -79,8 +81,10 @@ class ViewController: UIViewController, MPMediaPickerControllerDelegate, AVCaptu
         print("Did stop recording to \(outputFileURL)")
         
         video = outputFileURL
+        print("musicPlayer.currentPlaybackTime")
+        print(musicPlayer.currentPlaybackTime)
         
-        let stitch = Stitch(video: video!, audio: track!, duration: output.recordedDuration, orientation: orientation)
+        let stitch = Stitch(video: video!, audio: track!, duration: output.recordedDuration, orientation: orientation, startAudioPosition: startAudioPosition!)
         stitch.stitch()
     }
     //    didStartRecordingTo
@@ -146,6 +150,7 @@ class ViewController: UIViewController, MPMediaPickerControllerDelegate, AVCaptu
             videoOutput.setOutputSettings([AVVideoCodecKey: AVVideoCodecType.hevc], for: videoOutputConnection!)
         }
         videoOutputConnection?.videoOrientation = AVCaptureVideoOrientation(rawValue: UIDevice.current.orientation.rawValue)!
+        startAudioPosition = musicPlayer.currentPlaybackTime
         // Start recording video to a temporary file.
         let outputFileName = NSUUID().uuidString
         let outputFilePath = (NSTemporaryDirectory() as NSString).appendingPathComponent((outputFileName as NSString).appendingPathExtension("mov")!)
